@@ -47,8 +47,12 @@ const csvReadUrl = url =>
             violationCode: data['VIOLATION CODE'],
             violationDescription: data['VIOLATION DESCRIPTION'],
             criticalFlag: data['CRITICAL FLAG'],
-            gradeDate: new Date(data['GRADE DATE']),
-            recordDate: new Date(data['RECORD DATE']),
+            gradeDate: data['GRADE DATE'].length
+              ? new Date(data['GRADE DATE'])
+              : null,
+            recordDate: data['RECORD DATE'].length
+              ? new Date(data['RECORD DATE'])
+              : null,
             inspectionType: data['INSPECTION TYPE'],
             createdAt: 'NOW()',
             updatedAt: 'NOW()',

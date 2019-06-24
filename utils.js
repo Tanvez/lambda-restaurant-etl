@@ -10,20 +10,6 @@ const promiseWrapper = promise =>
         error: error.message,
       })
     );
-// const csvReadUrl = async url => {
-//   const result = [];
-//   await csv
-//     .parseStream(request(url), { headers: true })
-//     .on('error', error => console.error(error))
-//     .on('data', data => {
-//       console.log('current data: ');
-//       console.log(data);
-//       // user.
-//       result.push(data);
-//     })
-//     .on('end', () => console.log('done reading'));
-//   return result;
-// };
 const csvReadUrl = url =>
   new Promise((resolve, reject) => {
     const result = [];
@@ -36,46 +22,81 @@ const csvReadUrl = url =>
           BORO: boro,
           BUILDING: building,
           STREET: street,
-          ZIPCODE: zipcode,
+          ZIPCODE: zip,
           PHONE: phone,
           ACTION: action,
           SCORE: score,
           GRADE: grade,
         } = data;
         setImmediate(() =>
-          cb(null, [
-            camis,
+          cb(null, {
+            camis: +camis,
             dba,
             boro,
             building,
             street,
-            zipcode,
+            zip,
             phone,
             action,
-            score,
+            score: +score,
             grade,
-            data['CUISINE DESCRIPTION'],
-            data['INSPECTION DATE'],
-            data['VIOLATION CODE'],
-            data['VIOLATION DESCRIPTION'],
-            data['CRITICAL FLAG'],
-            data['GRADE DATE'],
-            data['RECORD DATE'],
-            data['INSPECTION TYPE'],
-          ])
+            cuisineDescription: data['CUISINE DESCRIPTION'],
+            inspectionDate: data['INSPECTION DATE'].length
+              ? new Date(data['INSPECTION DATE'])
+              : null,
+            violationCode: data['VIOLATION CODE'],
+            violationDescription: data['VIOLATION DESCRIPTION'],
+            criticalFlag: data['CRITICAL FLAG'],
+            gradeDate: new Date(data['GRADE DATE']),
+            recordDate: new Date(data['RECORD DATE']),
+            inspectionType: data['INSPECTION TYPE'],
+            createdAt: 'NOW()',
+            updatedAt: 'NOW()',
+          })
         );
       })
       .on('error', error => reject(error))
       .on('data', data => {
-        // console.log('current data: ');
-        // console.log(data);
         result.push(data);
       })
       .on('end', () => resolve(result));
   });
 
+// stackoverflow chuck data
+// https://stackoverflow.com/questions/8188548/splitting-a-js-array-into-n-arrays
+
+function chunkify(a, n, balanced) {
+  if (n < 2) return [a];
+
+  const len = a.length;
+  const out = [];
+  let i = 0;
+  let size;
+
+  if (len % n === 0) {
+    size = Math.floor(len / n);
+    while (i < len) {
+      out.push(a.slice(i, (i += size)));
+    }
+  } else if (balanced) {
+    while (i < len) {
+      size = Math.ceil((len - i) / n--);
+      out.push(a.slice(i, (i += size)));
+    }
+  } else {
+    n--;
+    size = Math.floor(len / n);
+    if (len % size === 0) size--;
+    while (i < size * n) {
+      out.push(a.slice(i, (i += size)));
+    }
+    out.push(a.slice(size * n));
+  }
+  return out;
+}
+
 module.exports = {
   promiseWrapper,
-  // csvReadUrl,
   csvReadUrl,
+  chunkify,
 };

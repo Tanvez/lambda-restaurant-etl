@@ -5,6 +5,14 @@ const pgp = require('pg-promise')({
 });
 const { promiseWrapper, csvReadUrl, chunkify } = require('./utils');
 
+const db = pgp({
+  user: process.env.DB_USERNAME,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+});
+
 exports.handler = async (event, context, callback) => {
   const { URL, DB_COLS } = process.env;
   const parsedColArray = JSON.parse(DB_COLS);
@@ -23,13 +31,6 @@ exports.handler = async (event, context, callback) => {
       data.length
     } rows`
   );
-  const db = pgp({
-    user: process.env.DB_USERNAME,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-  });
 
   // creates the column headers for inserting data
   const cs = new pgp.helpers.ColumnSet(parsedColArray, {

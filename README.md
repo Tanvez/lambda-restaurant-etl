@@ -1,7 +1,7 @@
 # Lambda to extract, transform and load data into the database
 
-Pros: Could trigger the lambda via CloudWatch triggers(cron).
-Cons: Lambda functions have a limit of 15mins to finish executing or it will timeout.
+Pros: Could trigger the lambda via CloudWatch triggers(cron).<br>
+Cons: Lambda functions have a limit of 15mins to finish executing or it will timeout.<br>
 Possible solution: could spin up an EC2 server instead
 
 ## Environment Variables ".env"
